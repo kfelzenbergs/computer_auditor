@@ -5,7 +5,7 @@ import json
 def check_configured_users(ssh):
     print("gathering configured users")
 
-    # get who i am: username
+    # get configured user accounts
     command = 'powershell -command "Get-LocalUser | ConvertTo-Json"'
     stdin, stdout, stderr = ssh.exec_command(command)
     stdin.close()
@@ -24,7 +24,6 @@ def check_configured_users(ssh):
             else:
                 lastLogon = False
 
-            print(lastLogon)
             obj_struct = {
                 "Enabled": account['Enabled'],
                 "LastLogon": lastLogon,
@@ -39,12 +38,29 @@ def check_configured_users(ssh):
 def check_bitlocker_status(ssh):
     print("check bitlocker status")
 
-    # get who i am: username
-    command = "manage-bde -status"
+    # get volume bitlocker status
+    command = 'powershell -command "Get-BitlockerVolume | ConvertTo-Json"'
     stdin, stdout, stderr = ssh.exec_command(command)
     stdin.close()
-    result = stdout.readlines()
-    print(result)
+    result = stdout.read()
+
+    # MountPoint, LockStatus
+
+    volume_bitlocker_status = []
+    if result:
+        result = json.loads(result)
+
+        obj_struct = {
+            "MountPoint": result['MountPoint'],
+            "LockStatus": result["LockStatus"],
+        }
+
+        volume_bitlocker_status.append(obj_struct)
+
+    return volume_bitlocker_status
+
+
+
 
 def check_msdefender_status(ssh):
     print("check ms defender status")

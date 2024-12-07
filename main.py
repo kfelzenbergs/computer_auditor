@@ -46,19 +46,25 @@ for server in servers:
     # for line in result:
     #     print(line)
 
+    result_struct = {
+        "users": "",
+        "volumes": ""
+    }
     
     server_data["HOST"] = server
 
-    # check_configured_users(ssh)
-    # check_bitlocker_status(ssh)
+    result_struct['users'] = check_configured_users(ssh)
+    result_struct['volumes'] = check_bitlocker_status(ssh)
     # check_msdefender_status(ssh)
     # check_winfirewall_status(ssh)
     # check_drive_status(ssh)
-    # check_last_update_status(ssh)
+    # result = check_last_update_status(ssh)
+    # result_obj = json.loads(result)
+    # print(result_obj)
     # info = get_mpcomputerstatus(ssh)
     # for line in info:
     #     print(line)
     
 
 
-print(json.dumps(results))
+print(json.dumps(result_struct, indent=4))
