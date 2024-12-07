@@ -8,6 +8,7 @@ from libs.checklist import (
     check_winfirewall_status,
     check_drive_status,
     check_last_update_status,
+    check_available_updates,
     get_mpcomputerstatus,
     check_antivirus
 )
@@ -52,23 +53,20 @@ for server in servers:
         "volumes": "",
         "antiviruses": []
     }
-    
+
     server_data["HOST"] = server
 
     result_struct['users'] = check_configured_users(ssh)
     result_struct['volumes'] = check_bitlocker_status(ssh)
     result_struct["antiviruses"] = check_antivirus(ssh)
-
-    # check_msdefender_status(ssh)
-    # check_winfirewall_status(ssh)
-    # check_drive_status(ssh)
-    # result = check_last_update_status(ssh)
-    # result_obj = json.loads(result)
-    # print(result_obj)
-    # info = get_mpcomputerstatus(ssh)
-    # for line in info:
-    #     print(line)
-    
+    result_struct["firewall"] = check_winfirewall_status(ssh)
+    result_struct["capacity"] = check_drive_status(ssh)
+    result_struct["installed_updates"] = check_last_update_status(ssh)
+    result_struct["available_updates"] = check_available_updates(ssh)
 
 # print(result_struct)
 print(json.dumps(result_struct, indent=4))
+
+f = open("report.json", 'w')
+f.write(json.dumps(result_struct, indent=4))
+f.close()
