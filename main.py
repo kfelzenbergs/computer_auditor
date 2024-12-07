@@ -8,7 +8,8 @@ from libs.checklist import (
     check_winfirewall_status,
     check_drive_status,
     check_last_update_status,
-    get_mpcomputerstatus
+    get_mpcomputerstatus,
+    check_antivirus
 )
 
 # define a list of servers
@@ -48,13 +49,16 @@ for server in servers:
 
     result_struct = {
         "users": "",
-        "volumes": ""
+        "volumes": "",
+        "antiviruses": []
     }
     
     server_data["HOST"] = server
 
     result_struct['users'] = check_configured_users(ssh)
     result_struct['volumes'] = check_bitlocker_status(ssh)
+    result_struct["antiviruses"] = check_antivirus(ssh)
+
     # check_msdefender_status(ssh)
     # check_winfirewall_status(ssh)
     # check_drive_status(ssh)
@@ -66,5 +70,5 @@ for server in servers:
     #     print(line)
     
 
-
+# print(result_struct)
 print(json.dumps(result_struct, indent=4))

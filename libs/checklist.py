@@ -1,4 +1,5 @@
 from datetime import datetime
+from scp import SCPClient
 import json
 
 
@@ -108,6 +109,37 @@ def get_mpcomputerstatus(ssh):
     command = 'powershell -command "Get-MpComputerStatus | ConvertTo-Json"'
     stdin, stdout, stderr = ssh.exec_command(command)
     stdin.close()
-    result = stdout.readlines()
+    result = stdout.read()
+    result = json.loads(result)
     
     return result
+
+
+def check_antivirus(ssh):
+    print("checks if antivirus is installed")
+
+    # copy binary
+    with SCPClient(ssh.get_transport()) as scp:
+        print("attempting to upload binary...")
+        scp.put('libs/binaries/win_antivirus_check.exe', 'C:')
+
+        print("executing binary...")
+        # execute binary
+        command = 'powershell -command "C:\\win_antivirus_check.exe"'
+        stdin, stdout, stderr = ssh.exec_command(command)
+        stdin.close()
+        result = stdout.read()
+        result = json.loads(result)
+        
+
+        print("cleanup..")
+        # cleanup
+        command = 'powershell -command "Remove-Item C:\\win_antivirus_check.exe"'
+        stdin, stdout, stderr = ssh.exec_command(command)
+        stdin.close()
+
+        return result
+
+
+
+
