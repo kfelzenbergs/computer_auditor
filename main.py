@@ -1,6 +1,15 @@
 import paramiko
 import json
 
+from libs.checklist import (
+    check_bitlocker_status, 
+    check_configured_users, 
+    check_msdefender_status, 
+    check_winfirewall_status,
+    check_drive_status,
+    check_last_update_status,
+    get_mpcomputerstatus
+)
 
 # define a list of servers
 servers = [
@@ -39,6 +48,16 @@ for server in servers:
 
     
     server_data["HOST"] = server
+
+    # check_configured_users(ssh)
+    # check_bitlocker_status(ssh)
+    # check_msdefender_status(ssh)
+    # check_winfirewall_status(ssh)
+    # check_drive_status(ssh)
+    # check_last_update_status(ssh)
+    # info = get_mpcomputerstatus(ssh)
+    # for line in info:
+    #     print(line)
     
 
 
